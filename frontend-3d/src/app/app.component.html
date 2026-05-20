@@ -1,0 +1,92 @@
+<div class="simulator-container">
+  <div class="sidebar glass-panel">
+    <div class="sidebar-header">
+      <h2>Hexapod</h2>
+      <span class="badge">Simulator Engine v1.0</span>
+    </div>
+
+    <div class="control-section">
+      <h3>Translation Controls</h3>
+      <div class="control-group">
+        <label>X-Axis <span class="value-readout">{{ params.x }} mm</span></label>
+        <input type="range" class="glow-slider" min="-150" max="150" step="1" [(ngModel)]="params.x" (input)="updateKinematics()">
+      </div>
+      <div class="control-group">
+        <label>Y-Axis <span class="value-readout">{{ params.y }} mm</span></label>
+        <input type="range" class="glow-slider" min="-150" max="150" step="1" [(ngModel)]="params.y" (input)="updateKinematics()">
+      </div>
+      <div class="control-group">
+        <label>Z-Axis <span class="value-readout">{{ params.z }} mm</span></label>
+        <input type="range" class="glow-slider" min="500" max="1500" step="10" [(ngModel)]="params.z" (input)="updateKinematics()">
+      </div>
+    </div>
+
+    <div class="control-section">
+      <h3>Rotation Controls</h3>
+      <div class="control-group">
+        <label>Roll <span class="value-readout">{{ params.roll }}°</span></label>
+        <input type="range" class="glow-slider" min="-30" max="30" step="1" [(ngModel)]="params.roll" (input)="updateKinematics()">
+      </div>
+      <div class="control-group">
+        <label>Pitch <span class="value-readout">{{ params.pitch }}°</span></label>
+        <input type="range" class="glow-slider" min="-30" max="30" step="1" [(ngModel)]="params.pitch" (input)="updateKinematics()">
+      </div>
+      <div class="control-group">
+        <label>Yaw <span class="value-readout">{{ params.yaw }}°</span></label>
+        <input type="range" class="glow-slider" min="-30" max="30" step="1" [(ngModel)]="params.yaw" (input)="updateKinematics()">
+      </div>
+    </div>
+
+    <div class="control-section">
+      <h3>Hardware Config</h3>
+      <div class="control-group">
+        <label>Platform Spacing <span class="value-readout">{{ params.platform_spacing }} mm</span></label>
+        <input type="range" class="glow-slider config-slider" min="10" max="100" step="1" [(ngModel)]="params.platform_spacing" (input)="updateKinematics()">
+      </div>
+      <div class="control-group">
+        <label>Base Diameter <span class="value-readout">{{ params.base_diameter }} mm</span></label>
+        <input type="range" class="glow-slider config-slider" min="400" max="1600" step="20" [(ngModel)]="params.base_diameter" (input)="updateKinematics()">
+      </div>
+      <div class="control-group">
+        <label>Platform Diameter <span class="value-readout">{{ params.platform_diameter }} mm</span></label>
+        <input type="range" class="glow-slider config-slider" min="300" max="1200" step="20" [(ngModel)]="params.platform_diameter" (input)="updateKinematics()">
+      </div>
+      <div class="control-group">
+        <label>Platform Weight <span class="value-readout">{{ params.platform_weight }} kg</span></label>
+        <input type="range" class="glow-slider config-slider" min="50" max="1000" step="10" [(ngModel)]="params.platform_weight" (input)="updateKinematics()">
+      </div>
+      <div class="control-group">
+        <label>Actuator Base <span class="value-readout">{{ params.actuator_fixed_length }} mm</span></label>
+        <input type="range" class="glow-slider config-slider" min="400" max="1000" step="10" [(ngModel)]="params.actuator_fixed_length" (input)="updateKinematics()">
+      </div>
+      <div class="control-group">
+        <label>Actuator Stroke <span class="value-readout">{{ params.actuator_working_distance }} mm</span></label>
+        <input type="range" class="glow-slider config-slider" min="100" max="800" step="10" [(ngModel)]="params.actuator_working_distance" (input)="updateKinematics()">
+      </div>
+    </div>
+  </div>
+  
+  <div class="main-view">
+    <div class="canvas-container" #canvasContainer>
+      <canvas #rendererCanvas></canvas>
+    </div>
+    
+    <div *ngIf="isOutOfBounds" class="out-of-bounds-overlay">
+      Warning: Pose is Outside Physical Workspace
+    </div>
+    
+    <div class="telemetry-dashboard glass-panel horizontal">
+      <div class="telemetry-card" *ngFor="let len of actuatorLengths; let i = index" [class.out-of-bounds-card]="outOfBoundsActuators[i]">
+        <div class="card-header">Actuator {{ i + 1 }}</div>
+        <div class="card-metric">
+          <span class="metric-label">Len:</span>
+          <span class="metric-val">{{ len | number:'1.0-1' }} <small>mm</small></span>
+        </div>
+        <div class="card-metric force-metric">
+          <span class="metric-label">Force:</span>
+          <span class="metric-val" [class.high-load]="actuatorForces[i] > 1000 || actuatorForces[i] < -1000">{{ actuatorForces[i] | number:'1.0-1' }} <small>N</small></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
