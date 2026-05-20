@@ -5,6 +5,31 @@ echo "     Restarting Hexapod Simulator (Mac)"
 echo "========================================="
 
 echo ""
+echo "Checking Backend dependencies..."
+cd backend-sim
+if [ ! -d "venv" ]; then
+    echo "Virtual environment not found. Creating and installing dependencies..."
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    deactivate
+else
+    echo "Backend dependencies found."
+fi
+cd ..
+
+echo ""
+echo "Checking Frontend dependencies..."
+cd frontend-3d
+if [ ! -d "node_modules" ]; then
+    echo "node_modules not found. Installing dependencies..."
+    npm install
+else
+    echo "Frontend dependencies found."
+fi
+cd ..
+
+echo ""
 echo "Stopping existing instances on ports 8000 and 4200..."
 # Find and kill any process using port 8000 (Backend)
 lsof -ti:8000 | xargs kill -9 2>/dev/null

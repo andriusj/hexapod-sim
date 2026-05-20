@@ -4,10 +4,34 @@ echo      Restarting Hexapod Simulator
 echo =========================================
 
 echo.
+echo Checking Backend dependencies...
+cd backend-sim
+if not exist "venv\" (
+    echo Virtual environment not found. Creating and installing dependencies...
+    python -m venv venv
+    call .\venv\Scripts\activate.bat
+    pip install -r requirements.txt
+    call .\venv\Scripts\deactivate.bat
+) else (
+    echo Backend dependencies found.
+)
+cd ..
+
+echo.
+echo Checking Frontend dependencies...
+cd frontend-3d
+if not exist "node_modules\" (
+    echo node_modules not found. Installing dependencies...
+    call npm install
+) else (
+    echo Frontend dependencies found.
+)
+cd ..
+
+echo.
 echo Stopping existing instances (if any)...
 taskkill /F /IM uvicorn.exe /T >nul 2>&1
 REM taskkill /F /IM node.exe /T >nul 2>&1  
-REM (Uncomment the line above if you want to aggressively kill all Node apps to free port 4200)
 
 echo.
 echo Starting Backend (FastAPI)...
